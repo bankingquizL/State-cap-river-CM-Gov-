@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Bank Exam Quiz</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+}
+
+h1{
+    text-align:center;
+}
+
+/* ========================= */
+/* TIMER AREA */
+/* ========================= */
+
+#timer-container{
+    position:sticky;
+    top:0;
+    z-index:100;
+    background:#f4f6f9;
+    padding-bottom:10px;
+}
+
+#timer{
+    background:#222;
+    color:white;
+    padding:15px;
+    text-align:center;
+    font-size:22px;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+.timer-buttons{
+    text-align:center;
+}
+
+#pauseBtn,
+#resumeBtn{
+    padding:10px 20px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+    margin:5px;
+}
+
+#pauseBtn{
+    background:#ff9800;
+    color:white;
+}
+
+#resumeBtn{
+    background:#28a745;
+    color:white;
+}
+
+.question{
+    background:white;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.question h3{
+    margin-bottom:15px;
+}
+
+.option{
+    display:block;
+    padding:12px;
+    margin:10px 0;
+    border:1px solid #ccc;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.option:hover{
+    background:#f0f0f0;
+}
+
+.selected{
+    background:#cfe2ff;
+    border:2px solid #0d6efd;
+}
+
+.mark-btn{
+    margin-top:10px;
+    padding:8px 15px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#ff9800;
+    color:white;
+}
+
+.marked{
+    background:#ffcc80 !important;
+}
+
+.review-marked{
+    background:#e0e0e0 !important;
+    border:2px solid #9e9e9e;
+}
+
+.clear-btn{
+    margin-top:10px;
+    margin-left:10px;
+    padding:8px 15px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#dc3545;
+    color:white;
+}
+
+.submit-btn{
+    width:100%;
+    padding:15px;
+    font-size:20px;
+    border:none;
+    border-radius:10px;
+    background:#28a745;
+    color:white;
+    cursor:pointer;
+    margin-top:20px;
+}
+
+.result-box{
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    text-align:center;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.review-btn{
+    padding:12px 20px;
+    margin-top:20px;
+    border:none;
+    border-radius:10px;
+    background:#007bff;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+
+.review-question{
+    background:white;
+    padding:20px;
+    margin:20px 0;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.correct{
+    color:green;
+    font-weight:bold;
+}
+
+.wrong{
+    color:red;
+    font-weight:bold;
+}
+
+.unanswered{
+    color:orange;
+    font-weight:bold;
+}
+
+.correct-answer{
+    background:#d4edda;
+    padding:10px;
+    border-radius:8px;
+    margin-top:10px;
+}
+
+.disabled-option{
+    pointer-events:none;
+    opacity:0.6;
+}
+
+.disabled-btn{
+    opacity:0.6;
+    cursor:not-allowed;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Bank Exam MCQ Quiz</h1>
+
+<!-- ========================= -->
+<!-- TIMER -->
+<!-- ========================= -->
+
+<div id="timer-container">
+
+    <div id="timer">
+        Time Left: 60:00
+    </div>
+
+    <div class="timer-buttons">
+
+        <button id="pauseBtn" onclick="pauseTimer()">
+            Pause
+        </button>
+
+        <button id="resumeBtn" onclick="resumeTimer()" disabled>
+            Resume
+        </button>
+
+    </div>
+
+</div>
+
+<div id="quiz"></div>
+
+<button class="submit-btn" onclick="submitQuiz()">
+Submit Quiz
+</button>
+
+</div>
+
+<script>
+
+// ===============================
+// QUESTIONS AREA
+// ===============================
+
+const questions = [
+  {q:"1. Which of the following correctly represents the state–capital–river combination according to the given list of Indian states?",options:["Andhra Pradesh – Amaravati – Krishna","Andhra Pradesh – Amaravati – Godavari","Andhra Pradesh – Hyderabad – Godavari","Andhra Pradesh – Visakhapatnam – Cauvery"],answer:1},
+
+{q:"2. Arunachal Pradesh, one of the northeastern states of India, was formed on 20 February 1987. Identify its capital and Chief Minister according to the given table.",options:["Dispur – Himanta Biswa Sarma","Kohima – Neiphiu Rio","Itanagar – Pema Khandu","Imphal – Yumnam Khemchand Singh"],answer:2},
+
+
+{q:"4. Bihar, whose capital is Patna, is associated with which major river in the given state-wise geographical information?",options:["Yamuna","Godavari","Sutlej","Ganga"],answer:3},
+
+{q:"5. Chhattisgarh, formed on 1 November 2000, has Raipur as its capital. Who is mentioned as its Chief Minister in the supplied table?",options:["Mohan Yadav","Vishnu Deo Sai","Bhajanlal Sharma","Hemant Soren"],answer:1},
+
+{q:"6. Which of the following combinations is correctly associated with Goa, including its capital, an important river and Chief Minister?",options:["Margao – Zuari – Pramod Sawant","Panaji – Zuari – Bhupendra Patel","Panaji – Mandovi – Pramod Sawant","Mapusa – Mandovi – Vishnu Deo Sai"],answer:2},
+
+{q:"7. Gujarat was formed on 1 May 1960 and has Gandhinagar as its capital. Which of the following rivers is associated with Gujarat according to the supplied table?",options:["Sabarmati","Pamba","Damodar","Bhadra"],answer:0},
+
+{q:"8. Haryana and Punjab share Chandigarh as their capital. Who is listed as the Chief Minister of Haryana in the given information?",options:["Bhagwant Singh Mann","Nayab Singh Saini","Bhupendra Patel","Sukhvinder Singh Sukhu"],answer:1},
+
+{q:"9. Himachal Pradesh attained statehood on 25 January 1971. Identify its capital and Chief Minister according to the supplied list.",options:["Dehradun – Pushkar Singh Dhami","Ranchi – Hemant Soren","Shimla – Sukhvinder Singh Sukhu","Jaipur – Bhajanlal Sharma"],answer:2},
+
+{q:"10. Which of the following sets of rivers is correctly associated with Jharkhand, whose capital is Ranchi?",options:["Ganga, Yamuna and Gomti","Krishna, Godavari and Tapi","Mahanadi, Brahmani and Damodar","Damodar, Ganga and Subarnarekha"],answer:3},
+
+{q:"11. Karnataka was formed on 1 November 1956. Which of the following correctly identifies its capital and the rivers mentioned in the supplied table?",options:["Bengaluru – Bhadra, Tungabhadra and Cauvery","Mysuru – Krishna, Godavari and Tapi","Bengaluru – Pamba, Mandovi and Ganga","Hubballi – Narmada, Shipra and Betwa"],answer:0},
+
+{q:"12. Kerala, formed on 1 November 1956, has Thiruvananthapuram as its capital. Which river is specifically mentioned against Kerala in the given list?",options:["Mandovi","Pamba","Musi","Rani Chu"],answer:1},
+
+{q:"13. Which of the following combinations correctly identifies Madhya Pradesh's capital, Chief Minister and an important river associated with the state?",options:["Jaipur – Bhajanlal Sharma – Chambal","Mumbai – Devendra Fadnavis – Godavari","Bhopal – Mohan Yadav – Narmada","Lucknow – Yogi Adityanath – Gomti"],answer:2},
+
+{q:"14. Maharashtra was formed on 1 May 1960. Which of the following river combinations is associated with Maharashtra in the supplied information?",options:["Ganga, Damodar and Mahananda","Sutlej, Yamuna and Pamba","Brahmani, Mahanadi and Mandovi","Krishna, Godavari, Tapi and Panchganga"],answer:3},
+
+{q:"15. Manipur, a northeastern state with Imphal as its capital, was formed on 21 January 1972. Who is mentioned as its Chief Minister in the supplied table?",options:["Yumnam Khemchand Singh","Conrad Kongkal Sangma","Pema Khandu","Neiphiu Rio"],answer:0},
+
+{q:"16. Meghalaya was formed on 21 January 1972. Which of the following correctly identifies its capital and Chief Minister according to the given information?",options:["Aizawl – PU Lalduhoma","Shillong – Conrad Kongkal Sangma","Kohima – Neiphiu Rio","Imphal – Yumnam Khemchand Singh"],answer:1},
+
+{q:"17. Mizoram, formed on 20 February 1987, has Aizawl as its capital. Who is mentioned as its Chief Minister in the supplied list?",options:["Pema Khandu","Himanta Biswa Sarma","PU Lalduhoma","Dr. Manik Saha"],answer:2},
+
+{q:"18. Nagaland was formed on 1 December 1963. Which of the following combinations correctly matches its capital, Chief Minister and rivers?",options:["Imphal – Yumnam Khemchand Singh – Barak","Shillong – Conrad Sangma – Umngot","Aizawl – PU Lalduhoma – Tlawng","Kohima – Neiphiu Rio – Diphu and Dhansiri"],answer:3},
+
+{q:"19. Odisha, whose capital is Bhubaneswar, is associated with which of the following rivers and Chief Ministers according to the supplied information?",options:["Brahmani and Mahanadi – Mohan Charan Majhi","Damodar and Ganga – Suvendu Adhikari","Godavari and Krishna – N. Chandrababu Naidu","Sabarmati and Narmada – Bhupendra Patel"],answer:0},
+
+{q:"20. Punjab was formed on 1 November 1966 and shares Chandigarh as its capital with Haryana. Who is listed as its Chief Minister?",options:["Nayab Singh Saini","Bhagwant Singh Mann","Bhupendra Patel","Devendra Fadnavis"],answer:1},
+
+{q:"21. Rajasthan, with Jaipur as its capital, was formed on 30 March 1949. Which of the following is mentioned as its major river in the supplied table?",options:["Godavari","Pamba","Chambal","Musi"],answer:2},
+
+{q:"22. Sikkim became a state on 16 May 1975. Which of the following correctly identifies its capital and Chief Minister according to the supplied list?",options:["Shillong – Conrad Kongkal Sangma","Kohima – Neiphiu Rio","Gangtok – Pema Khandu","Gangtok – Prem Singh Tamang (Golay)"],answer:3},
+
+{q:"23. Tamil Nadu was formed on 1 November 1956. Which of the following combinations correctly identifies its capital and the rivers listed against the state?",options:["Chennai – Cauvery, Adyar, Cooum, Vennar, Vaigai and Tambraparani","Chennai – Krishna, Godavari and Tapi","Coimbatore – Pamba, Mandovi and Musi","Madurai – Ganga, Gomti and Yamuna"],answer:0},
+
+{q:"24. Telangana, which became India's 29th state on 2 June 2014, has Hyderabad as its capital. Which river is mentioned in the supplied table?",options:["Sabarmati","Musi","Pamba","Brahmani"],answer:1},
+
+{q:"25. Tripura, formed on 21 January 1972, has Agartala as its capital. Who is mentioned as its Chief Minister in the supplied information?",options:["PU Lalduhoma","Yumnam Khemchand Singh","Dr. Manik Saha","Neiphiu Rio"],answer:2},
+
+{q:"26. Uttar Pradesh was formed on 24 January 1950 and has Lucknow as its capital. Which of the following sets contains only rivers associated with Uttar Pradesh in the supplied table?",options:["Godavari, Krishna and Tapi","Pamba, Mandovi and Musi","Brahmani, Mahanadi and Damodar","Yamuna, Ganga, Gomti and Chambal"],answer:3},
+
+{q:"27. Uttarakhand, formed on 9 November 2000, has Dehradun as its capital. Who is mentioned as its Chief Minister and which rivers are associated with the state?",options:["Pushkar Singh Dhami – Ganga and Mandakini","Hemant Soren – Damodar and Subarnarekha","Sukhvinder Singh Sukhu – Sutlej and Beas","Yogi Adityanath – Ganga and Gomti"],answer:0},
+
+{q:"28. West Bengal has Kolkata as its capital. According to the supplied table, which of the following rivers is associated with the state?",options:["Godavari, Krishna and Cauvery","Ganga, Damodar and Mahananda","Bhadra, Tunga and Pennar","Musi, Pamba and Mandovi"],answer:1},
+
+{q:"29. Which of the following states shares Chandigarh as its capital with Haryana?",options:["Rajasthan","Gujarat","Punjab","Himachal Pradesh"],answer:2},
+
+{q:"30. Among the following states, which one was formed on 20 February 1987 and shares its formation date with another northeastern state listed in the supplied table?",options:["Nagaland and Sikkim","Manipur and Meghalaya","Assam and Tripura","Arunachal Pradesh and Mizoram"],answer:3},
+
+{q:"31. Which pair of states was formed on 21 January 1972, according to the state formation dates provided?",options:["Manipur and Meghalaya","Mizoram and Arunachal Pradesh","Assam and Bihar","Punjab and Haryana"],answer:0},
+
+{q:"32. Which of the following pairs of states was formed on 1 November 1956, according to the supplied information?",options:["Gujarat and Maharashtra","Andhra Pradesh and Karnataka","Punjab and Haryana","Rajasthan and Sikkim"],answer:1},
+
+{q:"33. Which of the following states was formed on 2 June 2014, making it the most recently formed state among the 28 states listed in the supplied table?",options:["Chhattisgarh","Uttarakhand","Telangana","Jharkhand"],answer:2},
+
+{q:"34. Which of the following correctly matches the formation date of Jharkhand with its capital and Chief Minister according to the given information?",options:["1 November 2000 – Raipur – Vishnu Deo Sai","9 November 2000 – Dehradun – Pushkar Singh Dhami","15 November 2001 – Ranchi – Hemant Soren","15 November 2000 – Ranchi – Hemant Soren"],answer:3},
+
+{q:"35. Which state has Gandhinagar as its capital and was formed on 1 May 1960, following the reorganisation of the Bombay State?",options:["Gujarat","Maharashtra","Goa","Rajasthan"],answer:0},
+
+{q:"36. Identify the state–capital–Chief Minister combination correctly matched according to the supplied table.",options:["Assam – Shillong – Conrad Sangma","Bihar – Patna – Samrat Choudhary","Odisha – Cuttack – Mohan Charan Majhi","Tripura – Imphal – Yumnam Khemchand Singh"],answer:1},
+
+{q:"37. Which of the following rivers is associated with both Madhya Pradesh and Rajasthan in the supplied geographical information?",options:["Pamba","Mandovi","Chambal","Musi"],answer:2},
+
+{q:"38. The rivers Godavari and Krishna are important peninsular river systems. Which of the following states has both these rivers mentioned in its supplied river list?",options:["Kerala","Goa","Tamil Nadu","Maharashtra"],answer:3},
+
+{q:"39. Which of the following states has the largest number of rivers listed in the supplied table among the given options?",options:["Madhya Pradesh","Kerala","Goa","Rajasthan"],answer:0},
+
+{q:"40. Which state–capital combination is incorrectly matched according to the supplied table?",options:["Mizoram – Aizawl","Nagaland – Imphal","Meghalaya – Shillong","Manipur – Imphal"],answer:1},
+
+{q:"41. Which of the following correctly matches the state with its Governor as mentioned in the supplied table?",options:["Assam – Ramen Deka","Goa – Lakshman Prasad Acharya","Andhra Pradesh – S. Abdul Nazeer","Gujarat – Gulab Chand Kataria"],answer:2},
+
+{q:"42. According to the supplied list, which Governor is mentioned against Bihar with an appointment date of 13 March 2026?",options:["Santosh Kumar Gangwar","Ramen Deka","Lakshman Prasad Acharya","Lt. Gen. Syed Ata Hasnain"],answer:3},
+
+{q:"43. Which of the following state–Governor combinations is correctly matched according to the supplied table?",options:["Chhattisgarh – Ramen Deka","Jharkhand – Santosh Kumar Gangwar","Odisha – Om Prakash Mathur","Punjab – Anandiben Patel"],answer:0},
+
+{q:"44. Which Governor is listed for Gujarat, whose capital is Gandhinagar, in the supplied state-wise information?",options:["Ramen Deka","Acharya Dev Vrat","Gulab Chand Kataria","Braj Mohan Ram"],answer:1},
+
+{q:"45. According to the supplied table, who is mentioned as the Governor of Karnataka?",options:["Om Prakash Mathur","Mangubhai Chaganbhai Patel","Dr. Sudha Yadav","C. H. Vijaya Shankar"],answer:2},
+
+{q:"46. Which of the following Governor–State combinations is correctly matched according to the supplied list?",options:["Maharashtra – Anandiben Patel","Kerala – Jishnu Dev Varma","Madhya Pradesh – Rajendra Vishwanath Arlekar","Maharashtra – Jishnu Dev Varma"],answer:3},
+
+{q:"47. Which of the following states has Om Prakash Mathur listed as its Governor in the supplied information?",options:["Kerala","Mizoram","Nagaland","Tripura"],answer:0},
+
+{q:"48. Which Governor is mentioned against Madhya Pradesh, whose capital is Bhopal and Chief Minister is Mohan Yadav, in the supplied table?",options:["Bhupendra Patel","Mangubhai Chaganbhai Patel","Acharya Dev Vrat","Dushyant Goutam"],answer:1},
+
+{q:"49. Which of the following state–Governor pairs is correctly matched according to the supplied information?",options:["Nagaland – Indra Sena Reddy Nallu","Sikkim – Nand Kishore Yadav","Nagaland – Nand Kishore Yadav","Tripura – Dushyant Goutam"],answer:2},
+
+{q:"50. According to the supplied table, which Governor is listed against Tamil Nadu with an additional charge designation and an associated date of 12 March 2026?",options:["Vinai Kumar Saxena","Taranjit Singh Sandhu","Shri K. Kailashnathan","Rajendra Vishwanath Arlekar"],answer:3},
+
+{q:"51. Andaman and Nicobar Islands is a Union Territory of India. Which of the following correctly identifies its capital and the constitutional designation of its head as mentioned in the supplied table?",options:["Kavaratti – Administrator","Port Blair – Lieutenant Governor","Leh – Lieutenant Governor","Daman – Administrator"],answer:1},
+
+{q:"52. Chandigarh serves as the capital of two Indian states, Haryana and Punjab. What is the designation of the person administering the Union Territory of Chandigarh according to the supplied table?",options:["Lieutenant Governor","Chief Commissioner","Administrator","Chief Minister"],answer:2},
+
+{q:"53. Dadra and Nagar Haveli and Daman and Diu is a Union Territory formed through the merger of two former Union Territories in 2020. Which city is listed as its capital?",options:["Silvassa","Diu","Dadra","Daman"],answer:3},
+
+{q:"54. Delhi, officially known as the National Capital Territory (NCT) of Delhi, has Yamuna as its major river. Who is mentioned as its Chief Minister in the supplied table?",options:["Rekha Gupta","Atishi","Omar Abdullah","N. Rangaswamy"],answer:0},
+
+{q:"55. The Union Territory of Jammu and Kashmir has two seasonal capitals. Which of the following correctly represents its summer and winter capitals?",options:["Leh – Kargil","Srinagar – Jammu","Jammu – Srinagar","Srinagar – Leh"],answer:1},
+
+{q:"56. According to the supplied table, who is listed as the Lieutenant Governor of Jammu and Kashmir?",options:["Taranjit Singh Sandhu","Monoj kumar sinha","Vinai Kumar Saxena","K. Kailashnathan"],answer:2},
+
+{q:"57. Lakshadweep, an island Union Territory of India, has Kavaratti as its capital. Who is mentioned as its Administrator in the supplied table?",options:["Devendra Kumar Joshi","Gulab Chand Kataria","Taranjit Singh Sandhu","Praful Patel"],answer:3},
+
+{q:"58. Puducherry is a Union Territory with an elected Chief Minister and a Lieutenant Governor. Which of the following combinations is given in the supplied table?",options:["N. Rangaswamy – K. Kailashnathan","Rekha Gupta – Taranjit Singh Sandhu","Omar Abdullah – Vinai Kumar Saxena","No Chief Minister – Praful Patel"],answer:0},
+
+{q:"59. Ladakh became a separate Union Territory on 31 October 2019 following the reorganisation of Jammu and Kashmir. Which city is mentioned as its capital in the supplied table?",options:["Kargil","Leh","Srinagar","Jammu"],answer:1},
+
+{q:"60. Which of the following Union Territories has Port Blair as its capital and Devendra Kumar Joshi as its Lieutenant Governor according to the supplied table?",options:["Lakshadweep","Ladakh","Andaman and Nicobar Islands","Puducherry"],answer:2},
+
+{q:"61. Which of the following Union Territories has Daman as its capital and Praful Patel as its Administrator according to the supplied information?",options:["Chandigarh","Lakshadweep","Delhi","Dadra and Nagar Haveli and Daman and Diu"],answer:3},
+
+{q:"62. Which Union Territory has New Delhi as its capital, Yamuna as its river and Rekha Gupta as its Chief Minister in the supplied table?",options:["Delhi","Jammu and Kashmir","Chandigarh","Puducherry"],answer:0},
+
+{q:"63. Among the following Union Territories, which one has no Chief Minister mentioned in the supplied table and is administered by an Administrator named Gulab Chand Kataria?",options:["Dadra and Nagar Haveli and Daman and Diu","Chandigarh","Lakshadweep","Andaman and Nicobar Islands"],answer:1},
+
+{q:"64. Which of the following correctly matches the Union Territory with its capital and Lieutenant Governor according to the supplied information?",options:["Ladakh – Srinagar – Vinai Kumar Saxena","Delhi – Leh – Taranjit Singh Sandhu","Jammu and Kashmir – Srinagar (Summer) – Vinai Kumar Saxena","Andaman and Nicobar Islands – Kavaratti – Devendra Kumar Joshi"],answer:2},
+
+{q:"65. Which Union Territory has Pondicherry as its capital according to the supplied table and has N. Rangaswamy as its Chief Minister?",options:["Delhi","Chandigarh","Lakshadweep","Puducherry"],answer:3},
+
+{q:"66. Which of the following Union Territories has no Chief Minister listed in the supplied table and has Leh as its capital?",options:["Ladakh","Puducherry","Delhi","Jammu and Kashmir"],answer:0},
+
+{q:"67. Which of the following correctly identifies the Union Territory administered by Praful Patel and having Kavaratti as its capital?",options:["Dadra and Nagar Haveli and Daman and Diu","Lakshadweep","Chandigarh","Andaman and Nicobar Islands"],answer:1},
+
+{q:"68. The Union Territory of Jammu and Kashmir has Srinagar and Jammu as its seasonal capitals. Which of the following is its winter capital?",options:["Leh","Kargil","Jammu","Srinagar"],answer:2},
+
+{q:"69. Which of the following Union Territories has an elected Chief Minister named Omar Abdullah according to the supplied table?",options:["Delhi","Puducherry","Chandigarh","Jammu and Kashmir"],answer:3},
+
+{q:"70. Which of the following pairs consists of Union Territories whose administrators are both identified as Lieutenant Governors in the supplied table?",options:["Delhi and Andaman and Nicobar Islands","Chandigarh and Lakshadweep","Puducherry and Daman","Lakshadweep and Chandigarh"],answer:0},
+
+{q:"71. Which of the following pairs of Union Territories shares the same Administrator according to the supplied table?",options:["Delhi and Puducherry","Dadra and Nagar Haveli and Daman and Diu – Lakshadweep","Chandigarh and Andaman and Nicobar Islands","Ladakh and Jammu and Kashmir"],answer:1},
+
+{q:"72. Which Union Territory has a capital named Leh and is listed with Vinai Kumar Saxena as its Lieutenant Governor in the supplied table?",options:["Jammu and Kashmir","Andaman and Nicobar Islands","Ladakh","Lakshadweep"],answer:2},
+
+{q:"73. Which of the following correctly matches the Union Territory with its capital and administrator?",options:["Lakshadweep – Port Blair – Devendra Kumar Joshi","Chandigarh – Daman – Praful Patel","Delhi – Chandigarh – Gulab Chand Kataria","Chandigarh – Chandigarh – Gulab Chand Kataria"],answer:3},
+
+{q:"74. Which Union Territory among the following has a river listed against it in the supplied table?",options:["Delhi","Lakshadweep","Ladakh","Chandigarh"],answer:0},
+
+{q:"75. How many Union Territories are listed in the supplied table of Indian Union Territories?",options:["7","8","9","10"],answer:1},
+
+{q:"76. How many states are included in the supplied list of Indian states?",options:["27","29","28","30"],answer:2},
+
+{q:"77. Which of the following states has the earliest formation date among the four options according to the supplied table?",options:["Sikkim ","Gujarat","Nagaland ","Rajasthan "],answer:3},
+
+{q:"78. Which of the following states was formed on 1 November 2000 and has Raipur as its capital?",options:["Chhattisgarh","Jharkhand","Uttarakhand","Telangana"],answer:0},
+
+{q:"79. Which of the following states was formed on 9 November 2000 and has Dehradun as its capital?",options:["Jharkhand","Uttarakhand","Chhattisgarh","Himachal Pradesh"],answer:1},
+
+{q:"80. Which state was formed on 1 December 1963 and has Kohima as its capital?",options:["Mizoram","Manipur","Nagaland","Meghalaya"],answer:2},
+
+{q:"81. Which of the following states has Gangtok as its capital and 16 May 1975 as its formation date?",options:["Assam","Arunachal Pradesh","Meghalaya","Sikkim"],answer:3},
+
+{q:"82. Which of the following combinations correctly matches the states formed on 1 May 1960 with their respective capitals?",options:["Gujarat – Gandhinagar; Maharashtra – Mumbai","Gujarat – Ahmedabad; Maharashtra – Pune","Gujarat – Gandhinagar; Maharashtra – Nagpur","Gujarat – Surat; Maharashtra – Mumbai"],answer:0},
+
+{q:"83. Which of the following states was formed on 25 January 1971 and has Shimla as its capital?",options:["Uttarakhand","Himachal Pradesh","Haryana","Punjab"],answer:1},
+
+{q:"84. Which state among the following was formed on 30 May 1987 and has Panaji as its capital?",options:["Mizoram","Arunachal Pradesh","Goa","Sikkim"],answer:2},
+
+{q:"85. Which of the following states was formed on 1 November 1966 and has Chandigarh as its capital?",options:["Gujarat","Maharashtra","Rajasthan","Haryana"],answer:3},
+
+{q:"86. Which northeastern state has Aizawl as its capital and was formed on 20 February 1987?",options:["Mizoram","Arunachal Pradesh","Nagaland","Tripura"],answer:0},
+
+{q:"87. Which of the following states has Agartala as its capital and was formed on 21 January 1972?",options:["Manipur","Tripura","Meghalaya","Mizoram"],answer:1},
+
+{q:"88. Which of the following combinations correctly matches a state, its capital and the Chief Minister mentioned in the supplied table?",options:["Kerala – Kochi – V.D. Satheesan","Karnataka – Mysuru – D.K. Shivakumar","Madhya Pradesh – Bhopal – Mohan Yadav","Gujarat – Ahmedabad – Devendra Fadnavis"],answer:2},
+
+{q:"89. Which state has Bhubaneswar as its capital and Mohan Charan Majhi as its Chief Minister according to the supplied information?",options:["Bihar","Jharkhand","West Bengal","Odisha"],answer:3},
+
+{q:"90. Which of the following state–Chief Minister pairs is correctly matched according to the supplied table?",options:["Andhra Pradesh – N. Chandrababu Naidu","Tamil Nadu – A. Revanth Reddy","Telangana – N. Chandrababu Naidu","Kerala – Pema Khandu"],answer:0},
+
+{q:"91. Which of the following states has Hemant Soren listed as its Chief Minister and Ranchi as its capital?",options:["Chhattisgarh","Jharkhand","Bihar","Odisha"],answer:1},
+
+{q:"92. According to the supplied information, which Chief Minister is associated with Rajasthan, whose capital is Jaipur and whose formation date is 30 March 1949?",options:["Mohan Yadav","Vishnu Deo Sai","Bhajanlal Sharma","Bhupendra Patel"],answer:2},
+
+{q:"93. Which state–Chief Minister combination is correctly matched in the supplied table?",options:["Punjab – Nayab Singh Saini","Haryana – Bhagwant Singh Mann","Goa – Himanta Biswa Sarma","Punjab – Bhagwant Singh Mann"],answer:3},
+
+{q:"94. Which of the following states has Yogi Adityanath listed as its Chief Minister and Lucknow as its capital?",options:["Uttar Pradesh","Uttarakhand","Bihar","Rajasthan"],answer:0},
+
+{q:"95. Which of the following states has Suvendu Adhikari mentioned as its Chief Minister in the supplied table, with Kolkata as its capital?",options:["Odisha","West Bengal","Assam","Tripura"],answer:1},
+
+{q:"96. Which of the following river–state pairs is correctly matched according to the supplied table?",options:["Pamba – Goa","Mandovi – Kerala","Musi – Telangana","Rani Chu – Tamil Nadu"],answer:2},
+
+{q:"97. Which of the following combinations correctly matches a state with its capital and an important river listed in the supplied information?",options:["Bihar – Ranchi – Damodar","Goa – Panaji – Pamba","Kerala – Thiruvananthapuram – Mandovi","Andhra Pradesh – Amaravati – Godavari"],answer:3},
+
+{q:"98. Which of the following pairs of states shares a common formation date of 1 November 1956 according to the supplied table?",options:["Andhra Pradesh and Karnataka","Gujarat and Maharashtra","Punjab and Haryana","Manipur and Meghalaya"],answer:0},
+
+{q:"99. Which of the following combinations correctly identifies the state, its capital and its formation date?",options:["Telangana – Hyderabad – 1 June 2014","Telangana – Hyderabad – 2 June 2014","Jharkhand – Ranchi – 9 November 2000","Chhattisgarh – Raipur – 15 November 2000"],answer:1},
+
+{q:"100. Consider the following statements based on the supplied state and Union Territory list: (1) Chandigarh is the shared capital of Punjab and Haryana. (2) Hyderabad is the capital of Telangana. (3) Srinagar and Jammu are the seasonal capitals of Jammu and Kashmir. (4) Leh is the capital of Ladakh. Which of the above statements are correct?",options:["Only 1 and 2","Only 2 and 3","All 1, 2, 3 and 4","Only 1, 3 and 4"],answer:2},
+];
+
+
+
+// ===============================
+// VARIABLES
+// ===============================
+
+let userAnswers = new Array(questions.length).fill(null);
+
+let markedForReview = new Array(questions.length).fill(false);
+
+let submitted = false;
+
+// ===============================
+// LOAD QUIZ
+// ===============================
+
+function loadQuiz(){
+
+    const quizDiv = document.getElementById("quiz");
+
+    questions.forEach((question,index)=>{
+
+        const qDiv = document.createElement("div");
+
+        qDiv.classList.add("question");
+
+        qDiv.id = `question_${index}`;
+
+        qDiv.innerHTML = `
+        <h3>Q${index+1}. ${question.q}</h3>
+        `;
+
+        question.options.forEach((option,optIndex)=>{
+
+            const opt = document.createElement("div");
+
+            opt.classList.add("option");
+
+            opt.innerText = option;
+
+            opt.onclick = ()=>selectOption(index,optIndex,opt);
+
+            opt.id = `q${index}_opt${optIndex}`;
+
+            qDiv.appendChild(opt);
+
+        });
+
+        // MARK BUTTON
+
+        const markBtn = document.createElement("button");
+
+        markBtn.innerText = "Mark For Review";
+
+        markBtn.classList.add("mark-btn");
+
+        markBtn.onclick = ()=>toggleMark(index,markBtn);
+
+        qDiv.appendChild(markBtn);
+
+        // CLEAR BUTTON
+
+        const clearBtn = document.createElement("button");
+
+        clearBtn.innerText = "Clear";
+
+        clearBtn.classList.add("clear-btn");
+
+        clearBtn.onclick = ()=>clearAnswer(index);
+
+        qDiv.appendChild(clearBtn);
+
+        quizDiv.appendChild(qDiv);
+
+    });
+
+}
+
+// ===============================
+// SELECT OPTION
+// ===============================
+
+function selectOption(qIndex,optIndex,element){
+
+    if(submitted) return;
+
+    userAnswers[qIndex] = optIndex;
+
+    const options = document.querySelectorAll(`[id^="q${qIndex}_opt"]`);
+
+    options.forEach(opt=>{
+        opt.classList.remove("selected");
+    });
+
+    element.classList.add("selected");
+
+}
+
+// ===============================
+// MARK FOR REVIEW
+// ===============================
+
+function toggleMark(index,button){
+
+    markedForReview[index] = !markedForReview[index];
+
+    const questionBox = document.getElementById(`question_${index}`);
+
+    if(markedForReview[index]){
+
+        button.classList.add("marked");
+
+        button.innerText = "Marked For Review";
+
+        questionBox.classList.add("review-marked");
+
+    }else{
+
+        button.classList.remove("marked");
+
+        button.innerText = "Mark For Review";
+
+        questionBox.classList.remove("review-marked");
+
+    }
+
+}
+
+// ===============================
+// CLEAR ANSWER
+// ===============================
+
+function clearAnswer(index){
+
+    if(submitted) return;
+
+    userAnswers[index] = null;
+
+    const options = document.querySelectorAll(`[id^="q${index}_opt"]`);
+
+    options.forEach(opt=>{
+        opt.classList.remove("selected");
+    });
+
+}
+
+// ===============================
+// SUBMIT QUIZ
+// ===============================
+
+function submitQuiz(){
+
+    if(submitted) return;
+
+    submitted = true;
+
+    clearInterval(timer);
+
+    let score = 0;
+
+    let correctCount = 0;
+    let wrongCount = 0;
+    let unansweredCount = 0;
+
+    questions.forEach((question,index)=>{
+
+        const userAns = userAnswers[index];
+
+        if(userAns === null){
+
+            unansweredCount++;
+
+        }
+        else if(userAns === question.answer){
+
+            score += 1;
+            correctCount++;
+
+        }
+        else{
+
+            score -= 0.25;
+            wrongCount++;
+
+        }
+
+    });
+
+    let attempted = correctCount + wrongCount;
+
+    let accuracy = attempted > 0
+    ? ((correctCount/attempted)*100).toFixed(2)
+    : 0;
+
+    document.body.innerHTML = `
+
+    <div class="container">
+
+        <div class="result-box">
+
+            <h1>Quiz Submitted ✅</h1>
+
+            <h2>Total Score: ${score.toFixed(2)}</h2>
+
+            <h3>Correct Answers: ${correctCount}</h3>
+
+            <h3>Wrong Answers: ${wrongCount}</h3>
+
+            <h3>Unanswered Questions: ${unansweredCount}</h3>
+
+            <h3>Accuracy: ${accuracy}%</h3>
+
+            <button class="review-btn" onclick="reviewAnswers()">
+            Review Answers
+            </button>
+
+            <div id="reviewSection"></div>
+
+        </div>
+
+    </div>
+
+    `;
+
+}
+
+// ===============================
+// REVIEW ANSWERS
+// ===============================
+
+function reviewAnswers(){
+
+    const reviewSection = document.getElementById("reviewSection");
+
+    let html = `<h1 style="margin-top:40px;">Review Section</h1>`;
+
+    questions.forEach((question,index)=>{
+
+        const userAns = userAnswers[index];
+
+        let status = "";
+        let marks = "";
+
+        if(userAns === null){
+
+            status = `<span class="unanswered">Unanswered</span>`;
+            marks = `0 Marks`;
+
+        }
+        else if(userAns === question.answer){
+
+            status = `<span class="correct">Correct ✅</span>`;
+            marks = `+1 Mark`;
+
+        }
+        else{
+
+            status = `<span class="wrong">Wrong ❌</span>`;
+            marks = `-0.25 Mark`;
+
+        }
+
+        html += `
+
+        <div class="review-question">
+
+            <h3>Q${index+1}. ${question.q}</h3>
+
+            <p>${status}</p>
+
+            <p><b>Marks:</b> ${marks}</p>
+
+            <p>
+            <b>Your Answer:</b>
+            ${
+                userAns === null
+                ? "Not Attempted"
+                : question.options[userAns]
+            }
+            </p>
+
+            <div class="correct-answer">
+            <b>Correct Answer:</b>
+            ${question.options[question.answer]}
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    reviewSection.innerHTML = html;
+
+}
+
+// ===============================
+// TIMER
+// ===============================
+
+let time = 3600;
+
+let timer;
+
+let isPaused = false;
+
+function startTimer(){
+
+    timer = setInterval(()=>{
+
+        if(!isPaused){
+
+            let minutes = Math.floor(time/60);
+
+            let seconds = time%60;
+
+            document.getElementById("timer").innerText =
+            `Time Left: ${minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+
+            time--;
+
+            if(time < 0){
+
+                clearInterval(timer);
+
+                alert("Time is up! Quiz auto-submitted.");
+
+                submitQuiz();
+
+            }
+
+        }
+
+    },1000);
+
+}
+
+// ===============================
+// PAUSE TIMER
+// ===============================
+
+function pauseTimer(){
+
+    if(submitted) return;
+
+    isPaused = true;
+
+    document.getElementById("pauseBtn").disabled = true;
+
+    document.getElementById("resumeBtn").disabled = false;
+
+    // Disable options
+    document.querySelectorAll(".option").forEach(opt=>{
+        opt.classList.add("disabled-option");
+    });
+
+    // Disable buttons
+    document.querySelectorAll(".mark-btn, .clear-btn").forEach(btn=>{
+        btn.disabled = true;
+        btn.classList.add("disabled-btn");
+    });
+
+}
+// ===============================
+// RESUME TIMER
+// ===============================
+
+function resumeTimer(){
+
+    if(submitted) return;
+
+    isPaused = false;
+
+    document.getElementById("pauseBtn").disabled = false;
+
+    document.getElementById("resumeBtn").disabled = true;
+
+    // Enable options
+    document.querySelectorAll(".option").forEach(opt=>{
+        opt.classList.remove("disabled-option");
+    });
+
+    // Enable buttons
+    document.querySelectorAll(".mark-btn, .clear-btn").forEach(btn=>{
+        btn.disabled = false;
+        btn.classList.remove("disabled-btn");
+    });
+
+}
+// ===============================
+
+loadQuiz();
+
+startTimer();
+
+</script>
+
+</body>
+</html>
